@@ -1,4 +1,4 @@
-import React from "react";
+import React, { version } from "react";
 class MyComponent extends React.Component{
     state = {
         name: "An",
@@ -13,16 +13,26 @@ class MyComponent extends React.Component{
         });
     }
 
-    handleOnmouseOver(event){
-        console.log(event.pageX);
+    handleOnChange(event){
+        
+        this.setState({
+            name : event.target.value
+        })
     }
 
+    handleOnSubmit = (event) => {
+        event.preventDefault();
+        console.log(this.state);
+    }
     render(){
         return (
             <div>
                 My name is {this.state.name} and is {this.state.age} years old.
-                <button onMouseOver={this.handleOnmouseOver}>Hover me</button>
                 <button onClick={(event) => {this.handleClick(event)}}>Click me</button>
+                <form onSubmit={(event)=>this.handleOnSubmit(event)}>
+                    <input type="text" onChange={(event)=>this.handleOnChange(event)}/>
+                    <button>Submit</button>
+                </form>
             </div>
         );
     }
