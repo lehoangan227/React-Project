@@ -1,50 +1,41 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
-import { postCreateNewUser } from "../../../service/ApiService";
+import { putUpdateUser } from "../../../service/ApiService";
+import _ from "lodash";
 
-const AddNewUser = (props) => {
-  const { show, setShow } = props;
-
-  const validateEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
+const ModalUpdateUser = (props) => {
+  const {
+    showModalUpdateUser,
+    setShowModalUpdateUser,
+    dataUpdate,
+    setDataUpdate,
+  } = props;
 
   const handleClose = () => {
-    setShow(false);
+    setShowModalUpdateUser(false);
     setEmail("");
     setPassword("");
     setUsername("");
     setRole("USER");
     setImage("");
     setPreviewImage("");
+    setDataUpdate({});
   };
 
-  const handleAddNewUser = async () => {
-    const isValidEmail = validateEmail(email);
-    if (!isValidEmail) {
-      toast.error("Invalid Email");
-      return;
-    }
-    if (!password) {
-      toast.error("Invalid Password");
-      return;
-    }
+  const handleModalUpdateUser = async () => {
     if (!username) {
       toast.error("Invalid Username");
       return;
     }
 
-    let data = await postCreateNewUser(email, password, username, role, image);
+    let data = await putUpdateUser(dataUpdate.id, username, role, image);
     if (data && data.EC === 0) {
-      toast.success("Create new user success");
+      toast.success("Update user success");
       handleClose();
+      await props.fetchListUsers();
       // await props.fetchListUsers();
     }
     if (data && data.EC !== 0) {
@@ -61,6 +52,18 @@ const AddNewUser = (props) => {
   const [image, setImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
 
+  useEffect(() => {
+    if (!_.isEmpty(dataUpdate)) {
+      setEmail(dataUpdate.email);
+      setUsername(dataUpdate.username);
+      setRole(dataUpdate.role);
+      setImage("");
+      if (dataUpdate.image) {
+        setPreviewImage(`data:image/jpeg;base64,${dataUpdate.image}`);
+      }
+    }
+  }, [dataUpdate]);
+
   const handleUploadImage = (event) => {
     if (event.target && event.target.files && event.target.files[0]) {
       setPreviewImage(URL.createObjectURL(event.target.files[0]));
@@ -72,14 +75,14 @@ const AddNewUser = (props) => {
   return (
     <>
       <Modal
-        show={show}
+        show={showModalUpdateUser}
         onHide={handleClose}
         size="xl"
         backdrop="static"
         className="modal-add-user"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Add New User</Modal.Title>
+          <Modal.Title>Update User</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form className="row g-3">
@@ -88,6 +91,7 @@ const AddNewUser = (props) => {
               <input
                 type="email"
                 className="form-control"
+                disabled
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
@@ -97,6 +101,7 @@ const AddNewUser = (props) => {
               <input
                 type="password"
                 className="form-control"
+                disabled
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
@@ -148,7 +153,7 @@ const AddNewUser = (props) => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleAddNewUser}>
+          <Button variant="primary" onClick={handleModalUpdateUser}>
             Save Changes
           </Button>
         </Modal.Footer>
@@ -156,4 +161,4 @@ const AddNewUser = (props) => {
     </>
   );
 };
-export default AddNewUser;
+export default ModalUpdateUser;
