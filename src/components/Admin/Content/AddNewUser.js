@@ -2,9 +2,18 @@ import axios from "axios";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import { toast } from "react-toastify";
 
 const AddNewUser = (props) => {
   const { show, setShow } = props;
+
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
 
   const handleClose = () => {
     setShow(false);
@@ -17,14 +26,19 @@ const AddNewUser = (props) => {
   };
 
   const handleAddNewUser = async () => {
-    // let data = {
-    //   email: email,
-    //   password: password,
-    //   username: username,
-    //   role: role,
-    //   userImage: image,
-    // };
-    // console.log("check data user:", data);
+    const isValidEmail = validateEmail(email);
+    if (!isValidEmail) {
+      toast.error("Invalid Email");
+      return;
+    }
+    if (!password) {
+      toast.error("Invalid Password");
+      return;
+    }
+    if (!username) {
+      toast.error("Invalid Username");
+      return;
+    }
 
     const data = new FormData();
     data.append("email", email);
@@ -37,6 +51,14 @@ const AddNewUser = (props) => {
       "http://localhost:8081/api/v1/participant",
       data
     );
+    if (res && res.data && res.data.EC === 0) {
+      toast.success("Create new user success");
+      handleClose();
+      // await props.fetchListUsers();
+    }
+    if (res && res.data && res.data.EC !== 0) {
+      toast.error(res.data.EM);
+    }
 
     console.log("check res add new user:", res);
   };
@@ -58,10 +80,6 @@ const AddNewUser = (props) => {
 
   return (
     <>
-      {/* <Button variant="primary" onClick={handleShow}>
-        Add New User
-      </Button> */}
-
       <Modal
         show={show}
         onHide={handleClose}
