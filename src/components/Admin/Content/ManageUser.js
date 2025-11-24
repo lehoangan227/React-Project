@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AddNewUser from "./AddNewUser";
 import "./ManageUser.scss";
+import TableUser from "./TableUser";
 const ManageUser = () => {
   const [showModal, setShowModal] = useState(false);
   return (
@@ -15,7 +16,9 @@ const ManageUser = () => {
             Add New User
           </button>
         </div>
-        <div className="table-user-container">table users</div>
+        <div className="table-user-container">
+          <TableUser />
+        </div>
       </div>
       <AddNewUser show={showModal} setShow={setShowModal} />
     </div>

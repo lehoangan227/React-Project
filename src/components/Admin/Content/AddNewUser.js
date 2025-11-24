@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
+import { postCreateNewUser } from "../../../service/ApiService";
 
 const AddNewUser = (props) => {
   const { show, setShow } = props;
@@ -40,27 +41,17 @@ const AddNewUser = (props) => {
       return;
     }
 
-    const data = new FormData();
-    data.append("email", email);
-    data.append("password", password);
-    data.append("username", username);
-    data.append("role", role);
-    data.append("userImage", image);
-
-    let res = await axios.post(
-      "http://localhost:8081/api/v1/participant",
-      data
-    );
-    if (res && res.data && res.data.EC === 0) {
+    let data = await postCreateNewUser(email, password, username, role, image);
+    if (data && data.EC === 0) {
       toast.success("Create new user success");
       handleClose();
       // await props.fetchListUsers();
     }
-    if (res && res.data && res.data.EC !== 0) {
-      toast.error(res.data.EM);
+    if (data && data.EC !== 0) {
+      toast.error(data.EM);
     }
 
-    console.log("check res add new user:", res);
+    console.log("check res add new user:", data);
   };
 
   const [email, setEmail] = useState("");
