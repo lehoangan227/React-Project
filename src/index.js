@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "nprogress/nprogress.css";
 
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";

@@ -1,4 +1,18 @@
 .login-container {
+  .loader-icon {
+    font-size: 14px;
+    margin-bottom: 3px;
+    color: #00d4ff;
+    animation: spin 1s infinite linear;
+  }
+  @keyframes spin {
+    from {
+      transform: scale(1) rotate(0deg);
+    }
+    to {
+      transform: scale(1) rotate(360deg);
+    }
+  }
   // 1. Căn giữa toàn bộ container và đảm bảo chiều cao tối thiểu
   display: flex;
   flex-direction: column;
@@ -124,6 +138,12 @@
 
     &:hover {
       background-color: #000;
+    }
+
+    &:disabled {
+      background: #dddddd;
+      color: #afafaf;
+      cursor: no-drop;
     }
   }
 }
